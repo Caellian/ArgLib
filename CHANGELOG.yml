@@ -1,0 +1,5 @@
+versions:
+  - version: 1.0.0
+    name: Initial Release
+    changes:
+      - Created the library.
