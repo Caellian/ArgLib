@@ -22,7 +22,7 @@
 	}
 ```
 
-If you want to learn how to use ArgLib or have problems using it, you can consult the [ArgLib Wiki](https://github.com/Caellian/ArgLib/wiki/ArgLib-Wiki).
+If you want to learn how to use ArgLib or have problems using it, you can consult the [ArgLib Wiki](https://github.com/Caellian/ArgLib/wiki).
 
 ### Building
 ArgLib uses Gradle as it's build & dependency management system. All you have to do to build the project is download

@@ -2,14 +2,17 @@ buildscript {
 
     repositories {
         mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokkaVersion"
     }
 }
 
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.2.51'
+    id 'org.jetbrains.dokka' version '0.9.17'
 }
 
 repositories {
@@ -39,6 +42,50 @@ jar {
         include 'README.md'
         include 'LICENSE'
     }
+}
+
+dokka {
+    outputFormat = 'html'
+    outputDirectory = "$buildDir/javadoc"
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+
+    manifest {
+        attributes 'Implementation-Title': 'ArgLib',
+                'Implementation-Version': version
+    }
+
+    classifier = 'sources'
+    from sourceSets.main.allSource
+
+    from('.') {
+        include 'CHANGELOG.yml'
+        include 'README.md'
+        include 'LICENSE'
+    }
+}
+
+task javadocJar(type: Jar, dependsOn: dokka) {
+
+    manifest {
+        attributes 'Implementation-Title': 'ArgLib',
+                'Implementation-Version': version
+    }
+
+    classifier = 'javadoc'
+    from "$buildDir/javadoc"
+
+    from('.') {
+        include 'CHANGELOG.yml'
+        include 'README.md'
+        include 'LICENSE'
+    }
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
 }
 
 test {

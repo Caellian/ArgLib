@@ -28,4 +28,4 @@ cache:
 
 script:
   - ./gradlew --version
-  - ./gradlew test build
+  - ./gradlew test jar
