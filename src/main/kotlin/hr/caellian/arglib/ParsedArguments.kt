@@ -23,40 +23,56 @@ class ParsedArguments internal constructor() {
 
     /**
      * Returns value of boolean argument or flag.
+     *
+     * @param key name of the argument.
+     * @since 1.1.0
+     */
+    fun getBoolean(key: String): Boolean? {
+        return options[key]?.let {
+            ArgLib.parseBoolean(it)
+        }
+    }
+
+    /**
+     * Returns value of boolean argument or flag.
      * 
      * @param key name of the argument.
      * @param default value to return if argument is invalid or missing.
      * @since 1.0.0
      */
-    @JvmOverloads
-    fun getBoolean(key: String, default: Boolean? = null): Boolean? {
-        return options[key]?.let {
-            when (it.toLowerCase()) {
-                "true" -> true
-                "false" -> false
-                "yes" -> true
-                "no" -> false
-                "t" -> true
-                "f" -> false
-                "y" -> true
-                "n" -> false
-                "1" -> true
-                "0" -> false
-                else -> null
-            }
-        } ?: default
+    fun getBoolean(key: String, default: Boolean): Boolean {
+        return getBoolean(key) ?: default
     }
 
     /**
      * Returns byte value of given argument.
      * 
      * @param key name of the argument.
+     * @since 1.1.0
+     */
+    fun getByte(key: String): Byte? {
+        return options[key]?.toByteOrNull()
+    }
+
+    /**
+     * Returns byte value of given argument.
+     *
+     * @param key name of the argument.
      * @param default value to return if argument is invalid or missing.
      * @since 1.0.0
      */
-    @JvmOverloads
-    fun getByte(key: String, default: Byte? = null): Byte? {
-        return options[key]?.toByteOrNull() ?: default
+    fun getByte(key: String, default: Byte): Byte {
+        return getByte(key) ?: default
+    }
+
+    /**
+     * Returns short value of given argument.
+     *
+     * @param key name of the argument.
+     * @since 1.1.0
+     */
+    fun getShort(key: String): Short? {
+        return options[key]?.toShortOrNull()
     }
 
     /**
@@ -66,9 +82,18 @@ class ParsedArguments internal constructor() {
      * @param default value to return if argument is invalid or missing.
      * @since 1.0.0
      */
-    @JvmOverloads
-    fun getShort(key: String, default: Short? = null): Short? {
-        return options[key]?.toShortOrNull() ?: default
+    fun getShort(key: String, default: Short): Short {
+        return getShort(key) ?: default
+    }
+
+    /**
+     * Returns integer value of given argument.
+     *
+     * @param key name of the argument.
+     * @since 1.1.0
+     */
+    fun getInteger(key: String): Int? {
+        return options[key]?.toIntOrNull()
     }
 
     /**
@@ -78,69 +103,113 @@ class ParsedArguments internal constructor() {
      * @param default value to return if argument is invalid or missing.
      * @since 1.0.0
      */
-    @JvmOverloads
-    fun getInteger(key: String, default: Int? = null): Int? {
-        return options[key]?.toIntOrNull() ?: default
+    fun getInteger(key: String, default: Int): Int {
+        return getInteger(key) ?: default
     }
 
     /**
      * Returns float value of given argument.
      * 
      * @param key name of the argument.
-     * @param default value to return if argument is invalid or missing.
      * @since 1.0.0
      */
-    @JvmOverloads
-    fun getFloat(key: String, default: Float? = null): Float? {
-        return options[key]?.toFloatOrNull() ?: default
+    fun getFloat(key: String): Float? {
+        return options[key]?.toFloatOrNull()
+    }
+
+    /**
+     * Returns float value of given argument.
+     *
+     * @param key name of the argument.
+     * @param default value to return if argument is invalid or missing.
+     * @since 1.1.0
+     */
+    fun getFloat(key: String, default: Float): Float {
+        return getFloat(key) ?: default
     }
 
     /**
      * Returns double value of given argument.
      * 
      * @param key name of the argument.
-     * @param default value to return if argument is invalid or missing.
      * @since 1.0.0
      */
-    @JvmOverloads
-    fun getDouble(key: String, default: Double? = null): Double? {
-        return options[key]?.toDoubleOrNull() ?: default
+    fun getDouble(key: String): Double? {
+        return options[key]?.toDoubleOrNull()
+    }
+
+    /**
+     * Returns double value of given argument.
+     *
+     * @param key name of the argument.
+     * @param default value to return if argument is invalid or missing.
+     * @since 1.1.0
+     */
+    fun getDouble(key: String, default: Double): Double {
+        return getDouble(key) ?: default
     }
 
     /**
      * Returns integer value of given argument in form of [BigInteger].
      * 
      * @param key name of the argument.
-     * @param default value to return if argument is invalid or missing.
      * @since 1.0.0
      */
-    @JvmOverloads
-    fun getBigInteger(key: String, default: BigInteger? = null): BigInteger? {
-        return options[key]?.toBigIntegerOrNull() ?: default
+    fun getBigInteger(key: String): BigInteger? {
+        return options[key]?.toBigIntegerOrNull()
+    }
+
+    /**
+     * Returns integer value of given argument in form of [BigInteger].
+     *
+     * @param key name of the argument.
+     * @param default value to return if argument is invalid or missing.
+     * @since 1.1.0
+     */
+    fun getBigInteger(key: String, default: BigInteger): BigInteger {
+        return getBigInteger(key) ?: default
     }
 
     /**
      * Returns decimal value of given argument in form of [BigDecimal].
      * 
      * @param key name of the argument.
-     * @param default value to return if argument is invalid or missing.
      * @since 1.0.0
      */
-    @JvmOverloads
-    fun getBigDecimal(key: String, default: BigDecimal? = null): BigDecimal? {
-        return options[key]?.toBigDecimalOrNull() ?: default
+    fun getBigDecimal(key: String): BigDecimal? {
+        return options[key]?.toBigDecimalOrNull()
+    }
+
+    /**
+     * Returns decimal value of given argument in form of [BigDecimal].
+     *
+     * @param key name of the argument.
+     * @param default value to return if argument is invalid or missing.
+     * @since 1.1.0
+     */
+    fun getBigDecimal(key: String, default: BigDecimal): BigDecimal {
+        return getBigDecimal(key) ?: default
     }
 
     /**
      * Returns string value of given argument.
      * 
      * @param key name of the argument.
-     * @param default value to return if argument is invalid or missing.
      * @since 1.0.0
      */
-    @JvmOverloads
-    fun getString(key: String, default: String? = null): String? {
-        return options[key] ?: default
+    fun getString(key: String): String? {
+        return options[key]
+    }
+
+    /**
+     * Returns string value of given argument.
+     *
+     * @param key name of the argument.
+     * @param default value to return if argument is invalid or missing.
+     * @since 1.1.0
+     */
+    fun getString(key: String, default: String): String {
+        return getString(key) ?: default
     }
 
     /**

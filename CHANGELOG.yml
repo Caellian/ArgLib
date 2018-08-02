@@ -1,4 +1,13 @@
 versions:
+  - version: 1.1.0
+    name: Safer Types
+    changes:
+      - Functions with specified defaults now require non-null defaults.
+      - Functions with specified defaults always return non-null values.
+      - Added argument validation.
+      - Created custom exceptions for handling arguments.
+      - Improved documentation.
+      - Covered entire code functionality with tests.
   - version: 1.0.0
     name: Initial Release
     changes:

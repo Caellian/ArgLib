@@ -1,4 +1,4 @@
-# ArgLib v1.0.0
+# ArgLib v1.1.0
 [![Build Status](https://travis-ci.org/Caellian/ArgLib.svg?branch=master)](https://travis-ci.org/Caellian/ArgLib)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/fb0f64eceb8f42b8bfb38771991e05d9)](https://www.codacy.com/project/Caellian/ArgLib/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Caellian/ArgLib&amp;utm_campaign=Badge_Grade_Dashboard)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -18,9 +18,11 @@
 2. Add the dependency:
 ```groovy
 	dependencies {
-	        compile 'com.github.caellian:arglib:1.0.+'
+	        compile 'com.github.caellian:arglib:1.1.+'
 	}
 ```
+
+If you want to learn how to use ArgLib or have problems using it, you can consult the [ArgLib Wiki](https://github.com/Caellian/ArgLib/wiki/ArgLib-Wiki).
 
 ### Building
 ArgLib uses Gradle as it's build & dependency management system. All you have to do to build the project is download

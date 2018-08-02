@@ -3,28 +3,43 @@ package hr.caellian.arglib
 /**
  * ArgLib object exposes two variants of [parse] method which create [ParsedArguments] objects.
  * Both [parse] methods accept [ParserConfiguration] which dictates rules parser will follow while parsing arguments.
+ *
+ * Arguments passed to ArgLib must be tokenized. An array consisting of one string containing all arguments will not be
+ * handled properly. ArgLib cam support strings spread out through array elements if they are enclosed in either single
+ * or double quotation marks.
  */
 object ArgLib {
     /**
+     * Current version of the library.
+     */
+    val Version = "1.1.0"
+
+    /**
      * Parses given argument array and returns [ParsedArguments] which can be then used to recognise parameter options.
      *
+     * @param arguments array containing arguments.
+     * @param configuration configuration object defining parser behaviour.
      * @since 1.0.0
      */
     @JvmOverloads
     @JvmStatic
-    fun parse(args: Array<String>, config: ParserConfiguration = ParserConfiguration()): ParsedArguments = parse(args.toList(), config)
+    fun parse(arguments: Array<String>, configuration: ParserConfiguration = ParserConfiguration()): ParsedArguments = parse(arguments.toList(), configuration)
 
     /**
      * Parses given argument list and returns [ParsedArguments] which can be then used to recognise parameter options.
      *
+     * @param arguments array containing arguments.
+     * @param configuration configuration object defining parser behaviour.
      * @since 1.0.0
      */
     @JvmOverloads
     @JvmStatic
-    fun parse(args: List<String>, config: ParserConfiguration = ParserConfiguration()): ParsedArguments {
+    fun parse(arguments: List<String>, configuration: ParserConfiguration = ParserConfiguration()): ParsedArguments {
         val result = ParsedArguments()
-        result.options.putAll(config.defaults)
+        result.options.putAll(configuration.booleanFlags.associate { it to "false" })
+        result.options.putAll(configuration.defaults.filterNot { configuration.booleanFlags.contains(it.key) })
 
+        val invalidValues = mutableMapOf<String, String>()
         var value = false
         var of: String? = null
 
@@ -32,13 +47,24 @@ object ArgLib {
         var stringChar = '"'
         var builder = ""
 
-        args.forEach {
+        arguments.forEach {
             if (buildingString) {
                 if (!it.endsWith("\\$stringChar") && it.endsWith(stringChar)) {
                     builder += " ${it.substring(0, it.lastIndex)}"
 
                     of?.let { of ->
-                        result.options[of] = builder
+                        when (configuration.validValues[of]) {
+                            null -> result.options[of] = builder
+                            else -> {
+                                configuration.validValues[of]?.let {
+                                    if (!it.map { it.toLowerCase() }.contains(builder.toLowerCase())) {
+                                        invalidValues[of] = builder
+                                    } else {
+                                        result.options[of] = builder
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     builder = ""
@@ -50,14 +76,18 @@ object ArgLib {
             } else if (!value) {
                 val clean = it.removePrefix("-")
 
-                if (config.booleanFlags.contains(clean) ||
-                        config.aliases[clean]?.let { config.booleanFlags.contains(it) } == true) {
-                    result.options[clean] = "true"
+                if (configuration.booleanFlags.contains(clean) ||
+                        configuration.aliases[clean]?.let { configuration.booleanFlags.contains(it) } == true) {
+                    result.options[clean] = if (parseBoolean(configuration.defaults[clean] ?: "true") == false) {
+                        "false"
+                    } else {
+                        "true"
+                    }
                     value = false
                     of = null
                 } else {
-                    of = if (config.aliases.contains(clean)) {
-                        config.aliases[clean]
+                    of = if (configuration.aliases.contains(clean)) {
+                        configuration.aliases[clean]
                     } else {
                         clean
                     }
@@ -74,12 +104,36 @@ object ArgLib {
                     stringChar = '\''
                     builder += it.substring(1)
                 } else {
+
                     of?.let { of ->
-                        result.options[of] = if (it.startsWith("\"") && it.endsWith("\"")
-                                || it.startsWith("'") && it.endsWith("'")) {
-                            it.substring(1, it.lastIndex)
-                        } else {
-                            it
+                        when (configuration.validValues[of]) {
+                            null -> {
+                                result.options[of] = if (it.startsWith("\"") && it.endsWith("\"")
+                                        || it.startsWith("'") && it.endsWith("'")) {
+                                    it.substring(1, it.lastIndex)
+                                } else {
+                                    it
+                                }
+                            }
+                            else -> {
+                                configuration.validValues[of]?.let { valid ->
+                                    if (!valid.map { it.toLowerCase() }.contains(it.toLowerCase())) {
+                                        invalidValues[of] = if (it.startsWith("\"") && it.endsWith("\"")
+                                                || it.startsWith("'") && it.endsWith("'")) {
+                                            it.substring(1, it.lastIndex)
+                                        } else {
+                                            it
+                                        }
+                                    } else {
+                                        result.options[of] = if (it.startsWith("\"") && it.endsWith("\"")
+                                                || it.startsWith("'") && it.endsWith("'")) {
+                                            it.substring(1, it.lastIndex)
+                                        } else {
+                                            it
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -89,15 +143,35 @@ object ArgLib {
             }
         }
 
-        // If any bool flags haven't been set to true, set them to false
-        config.booleanFlags.forEach { result.options.putIfAbsent(it, false.toString()) }
+        // Handle invalid argument values if necessary
+        if (!configuration.ignoreInvalidValues) {
+            invalidValues.forEach { argument, current ->
+                throw InvalidArgumentValueException(argument, current, configuration.validValues[argument]!!)
+            }
+        }
 
         // Check if any required arguments are missing and name them.
-        val missing = config.required.filter { !result.options.containsKey(it) }
+        val missing = configuration.required.filter { !result.options.containsKey(it) }
         if (missing.isNotEmpty()) {
-            throw IllegalArgumentException("Missing arguments: ${missing.joinToString(", ")}")
+            throw MissingArgumentException(missing)
         }
 
         return result
+    }
+
+    internal fun parseBoolean(value: String): Boolean? {
+        return when (value.toLowerCase()) {
+            "true" -> true
+            "false" -> false
+            "yes" -> true
+            "no" -> false
+            "t" -> true
+            "f" -> false
+            "y" -> true
+            "n" -> false
+            "1" -> true
+            "0" -> false
+            else -> null
+        }
     }
 }

@@ -21,4 +21,3 @@ class ArgLibTestJUnit5 {
         assertThat(parsed.getBoolean("boolTest", false)).isTrue()
     }
 }
- 

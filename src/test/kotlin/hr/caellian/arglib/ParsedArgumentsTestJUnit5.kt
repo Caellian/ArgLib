@@ -40,88 +40,109 @@ class ParsedArgumentsTestJUnit5 {
     @Test
     fun booleanTest() {
         assertThat(parsedArguments.getBoolean("booleanValid"))
-                .isNotNull()
                 .isTrue()
 
         assertThat(parsedArguments.getBoolean("booleanInvalid"))
                 .isNull()
+
+        assertThat(parsedArguments.getBoolean("booleanInvalid", false))
+                .isFalse()
     }
 
     @Test
     fun byteTest() {
         assertThat(parsedArguments.getByte("byteValid"))
-                .isNotNull()
                 .isEqualTo(5)
 
         assertThat(parsedArguments.getByte("byteInvalid"))
                 .isNull()
+
+        assertThat(parsedArguments.getByte("byteInvalid", 2))
+                .isEqualTo(2)
     }
 
     @Test
     fun shortTest() {
         assertThat(parsedArguments.getShort("shortValid"))
-                .isNotNull()
                 .isEqualTo(100)
 
         assertThat(parsedArguments.getShort("shortInvalid"))
                 .isNull()
+
+        assertThat(parsedArguments.getShort("shortInvalid", 52))
+                .isEqualTo(52)
     }
 
     @Test
     fun integerTest() {
         assertThat(parsedArguments.getInteger("integerValid"))
-                .isNotNull()
                 .isEqualTo(33000)
 
         assertThat(parsedArguments.getInteger("integerInvalid"))
                 .isNull()
+
+        assertThat(parsedArguments.getInteger("integerInvalid", 2352))
+                .isEqualTo(2352)
     }
 
     @Test
     fun floatTest() {
         assertThat(parsedArguments.getFloat("floatValid"))
-                .isNotNull()
                 .isEqualTo(13.23f)
 
         assertThat(parsedArguments.getFloat("floatInvalid"))
                 .isNull()
+
+        assertThat(parsedArguments.getFloat("floatInvalid", 5.23f))
+                .isEqualTo(5.23f)
     }
 
     @Test
     fun doubleTest() {
         assertThat(parsedArguments.getDouble("doubleValid"))
-                .isNotNull()
                 .isEqualTo(73.167)
 
         assertThat(parsedArguments.getDouble("doubleInvalid"))
                 .isNull()
+
+        assertThat(parsedArguments.getDouble("doubleInvalid", 123.321))
+                .isEqualTo(123.321)
     }
 
     @Test
     fun bigIntegerTest() {
         assertThat(parsedArguments.getBigInteger("bigIntegerValid"))
-                .isNotNull()
                 .isEqualTo(BigInteger("24654725486652473456576548547666843562"))
 
         assertThat(parsedArguments.getBigInteger("bigIntegerInvalid"))
                 .isNull()
+
+        assertThat(parsedArguments.getBigInteger("bigIntegerInvalid", BigInteger("35653785667687634487643568946")))
+                .isEqualTo(BigInteger("35653785667687634487643568946"))
     }
 
     @Test
     fun bigDecimalTest() {
         assertThat(parsedArguments.getBigDecimal("bigDecimalValid"))
-                .isNotNull()
                 .isEqualTo(BigDecimal("2.4654725486652473456576548547666843562"))
 
         assertThat(parsedArguments.getBigDecimal("bigDecimalInvalid"))
                 .isNull()
+
+        assertThat(parsedArguments.getBigDecimal("bigDecimalInvalid", BigDecimal("5624734568765.346576636467664356863")))
+                .isEqualTo(BigDecimal("5624734568765.346576636467664356863"))
     }
 
     @Test
     fun stringTest() {
         assertThat(parsedArguments.getString("stringValid"))
-                .isNotNull()
                 .isEqualTo("This is a proper String.")
+
+        assertThat(parsedArguments.getString("stringInvalid"))
+                .isNull()
+
+        assertThat(parsedArguments.getString("stringInvalid", "Valid default."))
+                .isEqualTo("Valid default.")
     }
 
     @Test
@@ -130,7 +151,6 @@ class ParsedArgumentsTestJUnit5 {
         testFile.deleteOnExit()
         if (testFile.createNewFile()) {
             assertThat(parsedArguments.getFile("testFilePath"))
-                    .isNotNull()
                     .exists()
             testFile.delete()
         } else {
@@ -144,7 +164,6 @@ class ParsedArgumentsTestJUnit5 {
         testFile.deleteOnExit()
         if (testFile.createNewFile()) {
             assertThat(parsedArguments.getFileName("testFilePath"))
-                    .isNotNull()
                     .isEqualTo("file.test")
             testFile.delete()
         } else {
@@ -187,7 +206,7 @@ class ParsedArgumentsTestJUnit5 {
         testFile.createNewFile()
         testFile.deleteOnExit()
         val ous = parsedArguments.getOutputStream("testFilePath")
-        assertThat(ous).isNotNull
+        assertThat(ous).isNotNull()
         ous?.close()
         testFile.delete()
     }
